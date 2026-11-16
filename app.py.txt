@@ -1,0 +1,48 @@
+import streamlit as st
+import pandas as pd
+import joblib
+
+# Load trained model
+model = joblib.load(
+    "best_customer_transaction_model.pkl"
+)
+
+st.title("Customer Transaction Prediction")
+
+st.write(
+    "Predict whether a customer will make a transaction."
+)
+
+st.subheader("Enter Customer Details")
+
+# Collect 200 customer features
+features = {}
+
+for i in range(200):
+    feature_name = f"var_{i}"
+
+    features[feature_name] = st.number_input(
+        feature_name,
+        value=0.0
+    )
+
+if st.button("Predict Transaction"):
+
+    input_data = pd.DataFrame(
+        [features]
+    )
+
+    prediction = model.predict(input_data)
+
+    probability = model.predict_proba(input_data)[0][1]
+
+    if prediction[0] == 1:
+        st.success("Customer is likely to transact!")
+    else:
+        st.warning("Customer is unlikely to transact!")
+
+    st.write(
+        "Transaction Probability:",
+        round(probability * 100, 2),
+        "%"
+    )
